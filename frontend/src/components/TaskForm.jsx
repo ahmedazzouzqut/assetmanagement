@@ -4,17 +4,19 @@ import axiosInstance from '../axiosConfig';
 
 const TaskForm = ({ tasks, setTasks, editingTask, setEditingTask }) => {
   const { user } = useAuth();
-  const [formData, setFormData] = useState({ title: '', description: '', deadline: '' });
+  const [formData, setFormData] = useState({ title: '', manufacturer: '', description: '', SerialNumber: '', acquisitionDate: '' });
 
   useEffect(() => {
     if (editingTask) {
       setFormData({
         title: editingTask.title,
+        manufacturer: editingTask.manufacturer,
         description: editingTask.description,
-        deadline: editingTask.deadline,
+        SerialNumber: editingTask.SerialNumber,
+        acquisitionDate: editingTask.acquisitionDate,
       });
     } else {
-      setFormData({ title: '', description: '', deadline: '' });
+      setFormData({ title: '', manufacturer: '', description: '', SerialNumber: '', acquisitionDate: '' });
     }
   }, [editingTask]);
 
@@ -33,7 +35,7 @@ const TaskForm = ({ tasks, setTasks, editingTask, setEditingTask }) => {
         setTasks([...tasks, response.data]);
       }
       setEditingTask(null);
-      setFormData({ title: '', description: '', deadline: '' });
+      setFormData({ title: '', manufacturer: '', description: '', SerialNumber: '', acquisitionDate: '' });
     } catch (error) {
       alert('Failed to save task.');
     }
@@ -41,12 +43,19 @@ const TaskForm = ({ tasks, setTasks, editingTask, setEditingTask }) => {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-6 shadow-md rounded mb-6">
-      <h1 className="text-2xl font-bold mb-4">{editingTask ? 'Your Form Name: Edit Operation' : 'Your Form Name: Create Operation'}</h1>
+      <h1 className="text-2xl font-bold mb-4">{editingTask ? 'Asset Details: Edit Asset' : 'Details: Register Asset'}</h1>
       <input
         type="text"
-        placeholder="Title"
+        placeholder="Asset Name"
         value={formData.title}
         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+        className="w-full mb-4 p-2 border rounded"
+      />
+      <input
+        type="text"
+        placeholder="Manufacturer"
+        value={formData.manufacturer}
+        onChange={(e) => setFormData({ ...formData, manufacturer: e.target.value })}
         className="w-full mb-4 p-2 border rounded"
       />
       <input
@@ -57,13 +66,20 @@ const TaskForm = ({ tasks, setTasks, editingTask, setEditingTask }) => {
         className="w-full mb-4 p-2 border rounded"
       />
       <input
+        type="text"
+        placeholder="Serial Number"
+        value={formData.SerialNumber}
+        onChange={(e) => setFormData({ ...formData, SerialNumber: e.target.value })}
+        className="w-full mb-4 p-2 border rounded"
+      />
+      <input
         type="date"
         value={formData.deadline}
         onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
         className="w-full mb-4 p-2 border rounded"
       />
-      <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded">
-        {editingTask ? 'Update Button' : 'Create Button'}
+      <button type="submit" className="w-full bg-green-600 text-white p-2 rounded">
+        {editingTask ? 'Update Asset' : 'Register Asset'}
       </button>
     </form>
   );
