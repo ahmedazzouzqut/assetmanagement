@@ -7,7 +7,7 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    university: '',
+    department: '',
     address: '',
   });
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ const Profile = () => {
         setFormData({
           name: response.data.name,
           email: response.data.email,
-          university: response.data.university || '',
+          department: response.data.department || '',
           address: response.data.address || '',
         });
       } catch (error) {
@@ -58,7 +58,7 @@ const Profile = () => {
   return (
     <div className="max-w-md mx-auto mt-20">
       <form onSubmit={handleSubmit} className="bg-white p-6 shadow-md rounded">
-        <h1 className="text-2xl font-bold mb-4 text-center">Your Profile</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center">User Profile</h1>
         <input
           type="text"
           placeholder="Name"
@@ -75,9 +75,9 @@ const Profile = () => {
         />
         <input
           type="text"
-          placeholder="University"
-          value={formData.university}
-          onChange={(e) => setFormData({ ...formData, university: e.target.value })}
+          placeholder="Department"
+          value={formData.department}
+          onChange={(e) => setFormData({ ...formData, department: e.target.value })}
           className="w-full mb-4 p-2 border rounded"
         />
         <input

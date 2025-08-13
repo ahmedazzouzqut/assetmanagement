@@ -13,7 +13,12 @@ const Register = () => {
       alert('Registration successful. Please log in.');
       navigate('/login');
     } catch (error) {
-      alert('Registration failed. Please try again.');
+ if (error.response && error.response.data && error.response.data.message) {
+        alert(`Registration failed: ${error.response.data.message}`);
+      } else {
+        // Fallback for network/other errors
+        alert(`Registration failed: ${error.message}`);
+      }
     }
   };
 
