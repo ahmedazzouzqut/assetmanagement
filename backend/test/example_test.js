@@ -121,7 +121,6 @@ describe('Update Function Test', () => {
   });
 
 
-
   it('should return 404 if asset is not found', async () => {
     const findByIdStub = sinon.stub(Asset, 'findById').resolves(null);
 
