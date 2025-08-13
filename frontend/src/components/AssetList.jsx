@@ -20,7 +20,8 @@ const AssetList = ({ assets, setAssets, setEditingAsset }) => {
       {assets.map((asset) => (
         <div key={asset._id} className="bg-gray-100 p-4 mb-4 rounded shadow">
           <h2 className="font-bold">{asset.name}</h2>
-          <p>{asset.description}</p>
+          <p className="text-sm text-gray-500">Manufacturer: {asset.manufacturer}</p>
+          <p className="text-sm text-gray-500">Description: {asset.description}</p>
           <p className="text-sm text-gray-500">Acquisition Date: {new Date(asset.acquisitiondate).toLocaleDateString()}</p>
           <div className="mt-2">
             <button

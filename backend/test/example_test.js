@@ -15,16 +15,16 @@ let server;
 let port;
 
 
-describe('AddAssetFunction Test', () => {
+describe('AddAsset Function Test', () => {
 
-  it('should create a new Asset successfully', async () => {
+  it('should create a new asset successfully', async () => {
     // Mock request data
     const req = {
       user: { id: new mongoose.Types.ObjectId() },
-      body: { title: "New Asset", description: "Asset description", deadline: "2025-12-31" }
+      body: { name : "New Asset", description: "Asset description", manufacturer: "Asset Manufacturer", acquisitiondate : "2025-12-31" }
     };
 
-    // Mock Asset that would be created
+    // Mock asset that would be created
     const createdAsset = { _id: new mongoose.Types.ObjectId(), ...req.body, userId: req.user.id };
 
     // Stub Asset.create to return the createdAsset
@@ -55,7 +55,7 @@ describe('AddAssetFunction Test', () => {
     // Mock request data
     const req = {
       user: { id: new mongoose.Types.ObjectId() },
-      body: { title: "New Asset", description: "Asset description", deadline: "2025-12-31" }
+      body: { name: "New Asset", description: "Asset description", manufacturer: "Asset Manufacturer", acquisitiondate : "2025-12-31" }
     };
 
     // Mock response object
@@ -85,19 +85,20 @@ describe('Update Function Test', () => {
     const assetId = new mongoose.Types.ObjectId();
     const existingAsset = {
       _id: assetId,
-      title: "Old Asset",
+      name: "Old Asset",
       description: "Old Description",
-      completed: false,
-      deadline: new Date(),
+      manufacturer: "Old Manufacturer",
+      acquisitiondate : new Date(),
+      
       save: sinon.stub().resolvesThis(), // Mock save method
     };
-    // Stub Asset.findById to return mock Asset
+    // Stub Asset.findById to return mock asset
     const findByIdStub = sinon.stub(Asset, 'findById').resolves(existingAsset);
 
     // Mock request & response
     const req = {
       params: { id: assetId },
-      body: { title: "New Asset", completed: true }
+      body: { name: "New Asset", description: "Asset description", manufacturer: "New Manufacturer", acquisitiondate: "2025-12-31" }
     };
     const res = {
       json: sinon.spy(), 
@@ -108,8 +109,10 @@ describe('Update Function Test', () => {
     await updateAsset(req, res);
 
     // Assertions
-    expect(existingAsset.title).to.equal("New Asset");
-    expect(existingAsset.completed).to.equal(true);
+    expect(existingAsset.name).to.equal("New Asset");
+    expect(existingAsset.description).to.equal("Asset description");
+    expect(existingAsset.manufacturer).to.equal("New Manufacturer");
+    expect(existingAsset.acquisitiondate).to.equal("2025-12-31");
     expect(res.status.called).to.be.false; // No error status should be set
     expect(res.json.calledOnce).to.be.true;
 
@@ -154,6 +157,7 @@ describe('Update Function Test', () => {
   });
 
 
+
 });
 
 
@@ -166,11 +170,11 @@ describe('GetAsset Function Test', () => {
 
     // Mock asset data
     const assets = [
-      { _id: new mongoose.Types.ObjectId(), title: "Asset 1", userId },
-      { _id: new mongoose.Types.ObjectId(), title: "Asset 2", userId }
+      { _id: new mongoose.Types.ObjectId(), name: "Asset 1", userId },
+      { _id: new mongoose.Types.ObjectId(), name: "Asset 2", userId }
     ];
 
-    // Stub Asset.find to return mock Assets
+    // Stub Asset.find to return mock assets
     const findStub = sinon.stub(Asset, 'find').resolves(assets);
 
     // Mock request & response
@@ -220,14 +224,14 @@ describe('GetAsset Function Test', () => {
 
 describe('DeleteAsset Function Test', () => {
 
-  it('should delete a Asset successfully', async () => {
+  it('should delete a asset successfully', async () => {
     // Mock request data
     const req = { params: { id: new mongoose.Types.ObjectId().toString() } };
 
-    // Mock Asset found in the database
+    // Mock asset found in the database
     const asset = { remove: sinon.stub().resolves() };
 
-    // Stub Asset.findById to return the mock Asset
+    // Stub Asset.findById to return the mock asset
     const findByIdStub = sinon.stub(Asset, 'findById').resolves(asset);
 
     // Mock response object
@@ -248,7 +252,7 @@ describe('DeleteAsset Function Test', () => {
     findByIdStub.restore();
   });
 
-  it('should return 404 if Asset is not found', async () => {
+  it('should return 404 if asset is not found', async () => {
     // Stub Asset.findById to return null
     const findByIdStub = sinon.stub(Asset, 'findById').resolves(null);
 
