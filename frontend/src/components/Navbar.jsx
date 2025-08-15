@@ -9,7 +9,7 @@ const Navbar = () => {
     logout();
     navigate('/login');
   };
-
+// Navigation Bar structure
   return (
     <nav className="bg-gray-600 text-white py-3 px-4 flex items-center justify-between">
       <Link to="/" className="text-2xl font-bold">IT Asset Management</Link>

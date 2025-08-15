@@ -13,6 +13,8 @@ app.use(cors());
 app.use(express.json());
 //const morgan = require('morgan');
 //app.use(morgan('dev'));
+
+// API routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/assets', require('./routes/assetRoutes'));
 app.get('/api/health', (req, res) => {

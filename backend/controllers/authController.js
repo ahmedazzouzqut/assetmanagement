@@ -2,11 +2,11 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-
+// Generate JWT token
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
-
+// Register a new user
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
     try {
@@ -19,7 +19,7 @@ const registerUser = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
+// User login
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -33,7 +33,7 @@ const loginUser = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-
+// retrieve user profile
 const getProfile = async (req, res) => {
     try {
       const user = await User.findById(req.user.id);
@@ -51,7 +51,7 @@ const getProfile = async (req, res) => {
       res.status(500).json({ message: 'Server error', error: error.message });
     }
   };
-
+// Update user profile
 const updateUserProfile = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);

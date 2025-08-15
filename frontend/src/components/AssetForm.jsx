@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../axiosConfig';
-
+// Asset form component
 const AssetForm = ({ assets, setAssets, editingAsset, setEditingAsset }) => {
   const { user } = useAuth();
   const [formData, setFormData] = useState({ name: '', description: '', manufacturer: '', acquisitiondate: '' });
-
+//  asset form
   useEffect(() => {
     if (editingAsset) {
       setFormData({
@@ -18,7 +18,7 @@ const AssetForm = ({ assets, setAssets, editingAsset, setEditingAsset }) => {
       setFormData({ name: '', description: '', manufacturer: '', acquisitiondate: '' });
     }
   }, [editingAsset]);
-
+// handle submission of the asset form
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {

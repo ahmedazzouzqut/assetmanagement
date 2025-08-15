@@ -3,7 +3,7 @@ import axiosInstance from '../axiosConfig';
 
 const AssetList = ({ assets, setAssets, setEditingAsset }) => {
   const { user } = useAuth();
-
+  // Delete Asset function
   const handleDelete = async (assetId) => {
     try {
       await axiosInstance.delete(`/api/assets/${assetId}`, {
@@ -14,7 +14,7 @@ const AssetList = ({ assets, setAssets, setEditingAsset }) => {
       alert('Failed to delete asset.');
     }
   };
-
+// Asset list component
   return (
     <div>
       {assets.map((asset) => (

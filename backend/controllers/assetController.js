@@ -8,6 +8,7 @@ const getAssets = async (req, res) => {
          res.status(500).json({ message: error.message });
      }
 };
+//add an asset record 
 const addAsset = async (req, res) => {
     const { name, description, manufacturer, acquisitiondate } = req.body;
     try {
@@ -17,6 +18,7 @@ const addAsset = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+//update the asset record 
 const updateAsset = async (req, res) => {
     const { name, description, manufacturer, acquisitiondate } = req.body;
     try {
@@ -32,6 +34,7 @@ const updateAsset = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+//delete the asset record
 const deleteAsset = async (req, res) => {
     try {
         const asset = await Asset.findById(req.params.id);
