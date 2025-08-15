@@ -41,7 +41,7 @@ jobs:
       
     - run: pm2 stop all
 
-    # Install dependencies for backend
+    # Install dependencies for backend development
     - name: Install Backend Dependencies
       working-directory: ./backend
       run: | 
