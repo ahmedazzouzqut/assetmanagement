@@ -1,7 +1,7 @@
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-// User schema definition
+// User schema definition 
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
     department: { type: String },
     address: { type: String },
 });
-
+// Hash password before saving
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
     const salt = await bcrypt.genSalt(10);
