@@ -1,5 +1,5 @@
 import axios from 'axios';
-// create an axios instance to Ip address
+// create an axios instance to Ip address 
 const axiosInstance = axios.create({
   //baseURL: 'http://localhost:5001', // local
   baseURL: 'http://13.239.234.98:5001', // live
