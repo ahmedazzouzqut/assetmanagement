@@ -3,7 +3,7 @@ import axios from 'axios';
 const axiosInstance = axios.create({
   //baseURL: 'http://localhost:5001', // local
   baseURL: 'http://3.25.67.165:5001', // QUT Instance
-  //baseURL: 'http://3.106.127.210:5001', // My Instance
+  //baseURL: 'http://3.106.127.210:5001', // My ec2 Instance
   headers: { 'Content-Type': 'application/json' },
 });
 
