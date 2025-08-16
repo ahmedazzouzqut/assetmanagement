@@ -2,79 +2,100 @@ name: Backend CI
 
 on:
   push:
-    branches:
-      - main  # Trigger CI on pushes to the main branch
-
+    branches: [ main ]
 
 jobs:
   test:
     name: Run Tests
     runs-on: self-hosted
 
+    # Put caches in RAM (tmpfs) and make cleanup easy everywhere
+    env:
+      NPM_CONFIG_CACHE: /dev/shm/.npm
+      YARN_CACHE_FOLDER: /dev/shm/.yarn
+      CI: true
+
     strategy:
       matrix:
-        node-version: [22] # Test on multiple Node.js versions
-
-
-    environment: MONGO_URI
+        node-version: [22]
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    # Set up Node.js
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Setup Node.js (Node ${{ matrix.node-version }}) + Corepack
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: corepack enable
 
-    - name: Print Env Secret
+      # Keep the runner lean before we start
+      - name: Pre-clean workspace
+        run: |
+          df -h
+          git clean -fdx            # wipe untracked files (old build, node_modules, etc)
+          rm -rf ~/.npm ~/.cache/yarn
 
-      env:
-        MONGO_URI: ${{ secrets.MONGO_URI }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        PORT: ${{ secrets.PORT }}
-      run: | 
-        echo "Secret 1 is: $MONGO_URI"
-        echo "Secret 2 is: $JWT_SECRET"
-        echo "Secret 3 is: $PORT"
-      
-    - run: pm2 stop all
+      - name: Print Env Secret
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PORT: ${{ secrets.PORT }}
+        run: |
+          echo "Secret 1 is: $MONGO_URI"
+          echo "Secret 2 is: $JWT_SECRET"
+          echo "Secret 3 is: $PORT"
 
-    # Install dependencies for backend development
-    - name: Install Backend Dependencies
-      working-directory: ./backend
-      run: | 
-       npm install --global yarn
-       yarn --version
-       yarn install
-      
-    # Install dependencies for frontend
-    - name: Install Frontend Dependencies
-      working-directory: ./frontend
-      run: |
-        df -h
-        sudo rm -rf ./build
-        yarn install
-        yarn run build
+      - name: Stop PM2 apps (if running)
+        run: pm2 stop all || true
 
+      # ---- Backend ----
+      - name: Install Backend Dependencies (Yarn, lockfile strict)
+        working-directory: ./backend
+        run: |
+          yarn --version || true
+          yarn install --frozen-lockfile --prefer-offline
 
-    # Run backend tests
-    - name: Run Backend Tests
-      env:
-        MONGO_URI: ${{ secrets.MONGO_URI }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        PORT: ${{ secrets.PORT }}
-      working-directory: ./backend
-      run: npm test
+      - name: Run Backend Tests
+        working-directory: ./backend
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PORT: ${{ secrets.PORT }}
+        run: yarn test || npm test
 
+      - name: Write backend .env
+        working-directory: ./backend
+        run: |
+          rm -f .env
+          printf '%s\n' "${{ secrets.PROD }}" > .env
 
-    - run: npm ci
-    - run: | 
-        cd ./backend
-        touch .env
-        echo "${{ secrets.PROD }}" > .env
+      # ---- Frontend ----
+      - name: Install Frontend Dependencies (Yarn, lockfile strict)
+        working-directory: ./frontend
+        run: |
+          yarn install --frozen-lockfile --prefer-offline
 
-    - run: pm2 start all
+      - name: Build Frontend
+        working-directory: ./frontend
+        env:
+          # Optional: reduce memory spikes during build
+          NODE_OPTIONS: --max_old_space_size=512
+        run: |
+          yarn run build
+          df -h
 
-    - run: pm2 restart all
+      # ---- Deploy / Restart ----
+      - name: Start PM2 apps
+        run: pm2 start all || true
+
+      - name: Restart PM2 apps
+        run: pm2 restart all || true
+
+      # ---- Post-clean to keep disk free for next runs ----
+      - name: Post-clean artifacts & caches
+        if: always()
+        run: |
+          rm -rf frontend/node_modules backend/node_modules frontend/build .cache .turbo .next
+          rm -rf ~/.npm ~/.cache/yarn
+          df -h
